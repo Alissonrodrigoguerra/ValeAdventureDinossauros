@@ -1,0 +1,143 @@
+/* Web-fonts */
+
+font-family: 'Lato', sans-serif;
+font-family: 'Open Sans', sans-serif;
+font-family: 'Raleway', sans-serif;
+font-family: 'Roboto', sans-serif;
+
+/* 1 menu */
+
+#menu-list a{
+
+    padding: 20px;
+    margin-top: 15px;
+    color:#fff;
+
+}
+
+.nav-link{ color:#fff;}
+
+
+#menu-list {
+
+    padding: 20px;
+    margin-top: 15px;
+    color:#fff;
+
+}
+
+#menu-list a:hover{
+
+    color: yellow;
+
+}
+
+.img-logo{
+   margin-left: -15px;
+   z-index: 131;
+
+}
+
+.img-menu{
+    margin-right: -15px;
+    
+ }
+
+ #mobile_menu{
+    background-image: url("../template/images/menu_back.png");
+    background-repeat: no-repeat;
+    background-size: contain ;
+    background-position: right;
+    padding-top: 10px;
+    z-index: 130;
+    position: fixed;
+    right: 0px;
+    top:-15px
+
+ }
+
+ #mobile_menu li{
+  
+    line-height: 36px;
+    font-size: 30px;
+    text-align: right;
+    color: #000;
+    font-family: 'Raleway';
+    font-weight: 900;
+
+ }
+
+ #mobile_menu li:hover{
+     
+    color: #3a3939;
+ }
+
+ /* scroll */
+
+ body, html, .main {
+    height: 100%;
+  }
+
+ section {
+    min-height: 100%;
+  }
+
+ /* 2 Home */
+
+ #home{
+
+    background-image: url("../template/images/home_gray_background.jpg");
+    background-repeat: no-repeat;
+    height: 100%;
+ }
+.router{
+    color:yellow;
+}
+
+ .text-slogan{
+
+     padding: 250px 0px;
+     text-align: center;
+     color: #fff;
+ }
+
+
+ .text-slogan h4{
+     font-size:35px;
+}
+
+.text-slogan h1{
+
+    font-size:150px;
+    margin-top: -30px;
+}
+
+/* Sobre */
+
+
+
+
+/* media Query */
+
+@media (max-width: 990px) {
+
+    #home{
+
+        background-image: url("../template/images/mobile_home_gray_background.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        
+     }
+
+     #mobile_menu{
+     
+            background-size: unset;
+    
+     }
+
+     .text-slogan h1 {
+        font-size: 90px;
+        margin-top: -30px;
+    }
+     
+}
