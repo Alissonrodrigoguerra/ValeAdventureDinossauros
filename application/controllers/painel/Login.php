@@ -23,15 +23,16 @@ class Login extends CI_Controller {
 
 		$data = array();
 
+		$name = $this->input->post('username');
 		
-		if(!empty($this->input->post('username'))){
+		if(!empty($name)){
 			
 			$User = $this->input->post('username');
 			$Pass = $this->input->post('password');
 			
 			// HELPER PARA VERIFICAR O LOGIN E ABRIR SESSÃO.
 			
-			logon($User, $Pass);
+			logando($User, $Pass);
 
 		
 
