@@ -3,7 +3,7 @@
 // Data atual  : 28/01/2020 -->
 <?php 
      
-function logon ($user=NULL, $pass=NULL){
+function logando ($user=NULL, $pass=NULL){
 
     // EXEMPLO DE HElper com consulta ao banco de dados
 		
@@ -34,7 +34,7 @@ function logon ($user=NULL, $pass=NULL){
 
             if(!$pass !== $senhalogin){
                 
-                $sql = "SELECT * FROM Cargos WHERE idCargos = ".$row[0]->idCargo.""; 
+                $sql = "SELECT * FROM cargos WHERE idCargos = ".$row[0]->idCargo.""; 
                 $query = $ci->db->query($sql);
                 $cargos = $query->result();
 

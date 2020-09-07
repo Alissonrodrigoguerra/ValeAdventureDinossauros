@@ -39,12 +39,8 @@
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Grupo</th>
                             <th>Nome</th>
-                            <th>Alias</th>
-                            <th>Icone</th>
-                            <th>Posição</th>
-                            <th>Visivel no Menu</th>
+                            <th>Imagem</th>
                             <th>Status</th>
                             <th>
                             <a class="btn btn-primary" href="<?= base_url("painel/{$view['controller']['name']}/cadastrar") ?>" title="Novo">
@@ -100,49 +96,21 @@
 
 
                     "ajax": "<?= base_url('painel/' . $view['controller']['name'] . '/datatable') ?>",
-                    "columnDefs": [
-                            {
-                                "targets": [ 1 ],
-                                "visible": false,
-                                "searchable": false
-                            },
-                            {
-                                "targets": [3],
-                                "visible": false
-                            }, {
-                                "targets": [4],
-                                "visible": false
-                            }
-                            
-                            ],
-
                     "aoColumns": [
-                        null, null, null, null,  null, null, {
-                        "targets": 7,
-                        "data": "Visivel no Menu",
+                        null, null, {
+                        "targets": 4,
+                        "data": "editar",
                         "render": function ( data, type, row, meta ) {
-                            
-                            if(row[6] == 0){
-
-                                return 'sim';       
-
-
-                            }else{
-
-                                return 'Não';       
-
-
-                            }
-                            
-      
-                        }
-                        },{
-                        "targets": 8,
+                       
+                       return '<img src="<?= base_url() ?>assets/uploads/<?= TABELA_NOME ?>/'+row[2]+'" alt="'+row[1]+'">';
+                   
+                        }},{
+                        "targets": 3,
                         "data": "Status",
                         "render": function ( data, type, row, meta ) {
                             
 
-                            if(row[7] == '0'){
+                            if(row[3] == '0'){
 
                             return 'Sim';       
 
@@ -156,7 +124,7 @@
                    
                         }
                         },{
-                        "targets": 9,
+                        "targets": 4,
                         "data": "editar",
                         "render": function ( data, type, row, meta ) {
                         var html = new Array(

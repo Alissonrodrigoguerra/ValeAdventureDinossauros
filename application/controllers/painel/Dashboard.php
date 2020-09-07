@@ -28,12 +28,12 @@ class Dashboard extends CI_Controller {
 
     public function index() {
 
+
         $data = array();
         $data['auth'] =   $this->session->auth;
 
         $data['view']['controller'] = array('name' => 'dashboard', 'alias' => 'Dashboard');
         $data['view']['action'] = array('name' => 'index', 'alias' => 'Index');
-
 
         $this->load->view('painel/dashboard/index', $data);
         //

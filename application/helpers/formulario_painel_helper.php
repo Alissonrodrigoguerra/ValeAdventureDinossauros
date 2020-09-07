@@ -90,5 +90,44 @@ function select_options($nome, $alias, $opcao, $icon = Null, $record= Null){
 
 
 
+function input_file($nome, $record= Null, $tabela = null){
+    
+    echo "<div class='file-field input-field col s12 '". (form_error($nome) ? ' has-error' : null).">";
+ 
+    $data = array(
+        'type'  => 'text',
+        'name'  => $nome,
+        'id'    => $nome,
+        'class' => 'hiddenemail'
+    );
+   
+    echo "<div class='btn cyan waves-light'>";
+    echo "<span>".$data['name']."</span>";
+    echo "<input name='".$data['name']."' type='file'>";
+    echo "</div>";
+    echo "<div class='file-path-wrapper col s12'>";
+    echo "<input class='file-path validate' type='text'>";
+    echo "</div>";
+    if(form_error($data['name'])){
+
+        echo   "<div class='card-panel  red lighten-5'>";
+        echo   form_error($data['name']);
+        echo   "</div>";
+
+    } 
+    if($record != Null){
+        echo "<img src='".base_url()."assets/uploads/".$tabela."/".$record."' alt='".$nome."' style='width:150px; margin-bottom:20px; ; margin-left: -015px;'>";
+        echo "<br>";
+    }
+    echo "</div>";
+
+   
+
+};
+
+
+
+
+
 
 ?>
