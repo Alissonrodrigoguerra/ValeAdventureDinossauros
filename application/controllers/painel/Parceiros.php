@@ -127,7 +127,6 @@ class Parceiros extends CI_Controller {
 
         $data['view']['record'] = $this->read_model->select__id(TABELA_NOME, $id);
 
-       
         if( $this->input->post()){
           
 
@@ -157,6 +156,7 @@ class Parceiros extends CI_Controller {
 
 
             if($file){
+            arquivos_remover(TABELA_NOME, $data['view']['record']['imagem'] );
             $data_update_entity['imagem'] = arquivos_upload($file, $config);
             }
             

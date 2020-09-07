@@ -49,7 +49,7 @@
                          <?php 
                         //  CAMPO INPUT COMPLETO
                         if(!isset($view['record'])){ input_text($nome = "nome", $alias ="Nome", NULL, NULL );}else{ input_text($nome = "nome", $alias ="Nome", NULL, $record = $view['record']['name'] );}
-                        if(!isset($view['record'])){ input_file($nome = "Imagem");}else{ input_file($nome ="imagem", $record = $view['record']['imagem'],  $tabela = TABELA_NOME);}
+                        if(!isset($view['record'])){ input_file($nome = "Imagem");}else{ input_file($nome ="Imagem", $record = $view['record']['imagem'],  $tabela = TABELA_NOME);}
 
 
                         // END  CAMPO INPUT COMPLETO
