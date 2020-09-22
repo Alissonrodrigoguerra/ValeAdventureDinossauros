@@ -21,6 +21,7 @@ class Empresa extends CI_Controller {
 		
 		}
         $this->load->helper('painel2');
+        $this->load->library('session');
         $this->load->helper('session2');
 
         define('TABELA_NOME', 'empresa');
@@ -63,13 +64,15 @@ class Empresa extends CI_Controller {
         $data['tabelas_grupos'] = $this->Read_model->index('tabelas_grupos');
 
          // Validação
+      
+         if($data['auth']['idCargos'] != 0){
+            $this->session->set_flashdata('error', 'você não tem permissão para exlucir esse campo contate do desenvolvedor!');
+            redirect(base_url('painel/empresa'),'refresh');
 
-         $this->form_validation->set_rules('nome', 'Nome', 'required|min_length[3]|max_length[50]');
-         $this->form_validation->set_rules('alias', 'Alias', 'required|min_length[3]|max_length[50]');
-         $this->form_validation->set_rules('posicao', 'Posição', 'required|numeric');
-         $this->form_validation->set_rules('icone', 'Icone', 'required');
-         $this->form_validation->set_rules('tabelas_grupos', 'Grupos Tabelas', 'required');
-         $this->form_validation->set_rules('VisivelNoMenu', 'Visivel No Menu', 'required');
+         }
+
+         $this->form_validation->set_rules('titulo', 'Título', 'required|min_length[3]|max_length[50]');
+   
 
 
          // Executa Validação
@@ -77,25 +80,20 @@ class Empresa extends CI_Controller {
         if ($this->form_validation->run() == TRUE)
         {
             if( $this->input->post()){
-                
+              
                 $data_insert_entity = array(
-
-                    'nome'  => $this->input->post('nome'),
-                    'path'  => $this->input->post('alias'),
-                    'alias'  => $this->input->post('alias'),
-                    'posicao'  => $this->input->post('posicao'),
-                    'icone'  => $this->input->post('icone'),
-                    'idTabelas_grupos' =>   $this->input->post('tabelas_grupos'),
-                    'visivelNoMenu'  => $this->input->post('VisivelNoMenu'),
+                    'titulo'  => $this->input->post('titulo'),
+                    'sub_titulo'  => $this->input->post('sub_titulo'),
+                    'link'  => $this->input->post('link'),
+                    'descricao'  => $this->input->post('descricao'),
+                    'status'  => 1,
                     'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                     'ip' => $_SERVER['REMOTE_ADDR'],
                     'created_at' => time(),
-
                 );
+           
+        
           
-                $this->load->helper('construct_table_helper');
-                helperconstruct_table_criar($data_insert_entity['nome']);	
-               
                 if($this->insert_model->index(TABELA_NOME, $data_insert_entity)){
 
                     $this->session->set_flashdata('success', 'Registro gravado com sucesso.');
@@ -106,6 +104,7 @@ class Empresa extends CI_Controller {
                     $this->session->set_flashdata('error', 'Ocorreu um erro ao gravar o registro.');
                     redirect(base_url('painel/' . TABELA_NOME));
                 }
+
 
             }
         }
@@ -138,33 +137,17 @@ class Empresa extends CI_Controller {
     
                 
             $data_update_entity = array(
-
-                'nome'  => $this->input->post('nome'),
-                'path'  => $this->input->post('alias'),
-                'alias'  => $this->input->post('alias'),
-                'posicao'  => $this->input->post('posicao'),
-                'icone'  => $this->input->post('icone'),
-                'idTabelas_grupos' =>   $this->input->post('tabelas_grupos'),
-                'visivelNoMenu'  => $this->input->post('VisivelNoMenu'),
+                'titulo'  => $this->input->post('titulo'),
+                'sub_titulo'  => $this->input->post('sub_titulo'),
+                'link'  => $this->input->post('link'),
+                'descricao'  => $this->input->post('descricao'),
+                'status'  => 1,
                 'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                 'ip' => $_SERVER['REMOTE_ADDR'],
                 'created_at' => time(),
 
             );
-          
 
-            $this->load->dbforge();
-            $this->dbforge->rename_table($data['view']['record']['nome'], $data_update_entity['nome']);
-            $fields = array(
-              'id'.ucfirst($data['view']['record']['nome']) => array(
-                        'name' => 'id'.ucfirst($data_update_entity['nome']),
-                        'type' => 'INT',
-
-                ),
-            );
-
-          
-            $this->dbforge->modify_column($data_update_entity['nome'], $fields);
            
             if ($this->db->update(TABELA_NOME, $data_update_entity, array(TABELA_ID => $id))) {
 
@@ -225,20 +208,23 @@ class Empresa extends CI_Controller {
       
         $data = array();
         $data['auth'] =   $this->session->auth;
-
+      
         
         $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
         $data['view']['action'] = array('name' => 'editar', 'alias' => 'Editar');
         $data['view']['record'] = $this->read_model->select__id(TABELA_NOME, $id);
         
-      
-        $this->delete_model->index($id, TABELA_NOME);
+        if($data['auth']['idCargos'] == 0){
 
-        $this->load->dbforge();
-        $this->dbforge->drop_table($data['view']['record']['nome'], TRUE);
-     
+        $this->delete_model->index($id, TABELA_NOME);
+        $this->session->set_flashdata('success', 'Registro atualizado com sucesso.');
+    
+        }else{
+            $this->session->set_flashdata('error', 'você não tem permissão para exlucir esse campo contate do desenvolvedor!');
+        }
         
-         redirect(base_url('painel/' . TABELA_NOME . '/'));
+        //
+        redirect(base_url('painel/' . TABELA_NOME . '/'));
         
 
         
@@ -253,7 +239,7 @@ class Empresa extends CI_Controller {
 
         $sTable = TABELA_NOME;
 
-        $aColumns = array(TABELA_ID, 'grupo', 'nome', 'alias', 'icone', 'posicao', 'visivelNoMenu', 'status');
+        $aColumns = array(TABELA_ID, 'titulo', 'sub_titulo', 'status');
 
         $sIndexColumn = TABELA_ID;
 
@@ -301,35 +287,35 @@ class Empresa extends CI_Controller {
             }
         }
 
-        /* $sQuery = "
+        $sQuery = "
           SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
           FROM $sTable
           $sWhere
           $sOrder
           $sLimit
-          "; */
+          "; 
 
         if (!$sWhere) {
             $sWhere = 'WHERE 1';
         }
 
-        $sQuery = "
-        SELECT SQL_CALC_FOUND_ROWS
-        a.idTabelas,
-        b.nome grupo,
-        a.nome,
-        a.alias,
-        a.icone,
-        a.posicao,
-        a.visivelNoMenu,
-        a.status status
-        FROM $sTable a,
-        tabelas_grupos b
-        $sWhere
-        AND a.idTabelas_grupos = b.idTabelas_grupos
-        $sOrder
-        $sLimit
-        ";
+        // $sQuery = "
+        // SELECT SQL_CALC_FOUND_ROWS
+        // a.idTabelas,
+        // b.nome grupo,
+        // a.nome,
+        // a.alias,
+        // a.icone,
+        // a.posicao,
+        // a.visivelNoMenu,
+        // a.status status
+        // FROM $sTable a,
+        // tabelas_grupos b
+        // $sWhere
+        // AND a.idTabelas_grupos = b.idTabelas_grupos
+        // $sOrder
+        // $sLimit
+        // ";
 
         $rResult = $this->db->query($sQuery) or helperDataTable2FatalError('MySQL Error: ' . $this->db->_error_message());
 

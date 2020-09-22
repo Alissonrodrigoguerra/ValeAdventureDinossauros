@@ -19,7 +19,22 @@ class welcome extends CI_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index()
-	{
-		$this->load->view('welcome/index');
+	{	
+		
+		$this->load->model('Read_model');
+		$data = array();
+		$data['quemsomos'] = $this->Read_model->select__id('Empresa', 2 );
+		$data['rota'] = $this->Read_model->select__id('Empresa', 3 );
+		$data['horario'] = $this->Read_model->select__id('Empresa', 4 );
+		$data['Endereco'] = $this->Read_model->select__id('Empresa', 5 );
+		$data['Telefone'] = $this->Read_model->select__id('Empresa', 6 );
+		$data['youtube'] = $this->Read_model->select_ativo('videos', 'Limit 1');
+		$data['parceiros'] = $this->Read_model->select_ativo('parceiros');
+		$data['planos'] = $this->Read_model->select_ativo('planos');
+
+		// print_r($data);
+		// die;
+			
+		$this->load->view('welcome/index', $data );
 	}
 }

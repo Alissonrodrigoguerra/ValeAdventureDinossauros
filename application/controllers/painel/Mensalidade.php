@@ -1,6 +1,6 @@
 <?php
 
-class videos extends CI_Controller {
+class Mensalidade extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -22,17 +22,19 @@ class videos extends CI_Controller {
 		}
         $this->load->helper('painel2');
         $this->load->helper('session2');
+        $this->load->helper('String2');
 
-        define('TABELA_NOME', 'videos');
-        define('TABELA_ALIAS', 'Videos');
-        define('TABELA_ID', 'idVideos');
+
+        define('TABELA_NOME', 'mensalidade');
+        define('TABELA_ALIAS', 'Mensalidade');
+        define('TABELA_ID', 'idMensalidade');
 
 
         $this->load->model('delete_model');
         $this->load->model('insert_model');
         $this->load->model('update_model');
         $this->load->model('read_model');
-
+     
     }
 
     public function index() {
@@ -54,19 +56,20 @@ class videos extends CI_Controller {
         $data = array();
         $data['auth'] =   $this->session->auth;
 
-     
         
         $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
         $data['view']['action'] = array('name' => 'cadastrar', 'alias' => 'Cadastar');
+        $data['view']['carteirinha'] =   $this->read_model->select_ativo('carteirinha');
+        $data['view']['planos'] =   $this->read_model->select_ativo('planos');
 
 
         $this->load->model('Read_model');
         $data['tabelas_grupos'] = $this->Read_model->index('tabelas_grupos');
 
-         // Validação
+        // Validação
 
-         $this->form_validation->set_rules('nome', 'Nome', 'required|min_length[3]|max_length[50]');
-         $this->form_validation->set_rules('link', 'Link', 'required|min_length[3]|max_length[50]');
+        $this->form_validation->set_rules('data_do_pagamento', 'Data do Pagamento', 'required');
+        
 
 
          // Executa Validação
@@ -74,19 +77,23 @@ class videos extends CI_Controller {
         if ($this->form_validation->run() == TRUE)
         {
             if( $this->input->post()){
-                
+             
+
                 $data_insert_entity = array(
-                    
-                    'nome'  => $this->input->post('nome'),
-                    'link'  => $this->input->post('link'),
-                    'status'  => $this->input->post('status'),
+
+                    'data_do_pagamento'  => helperString2limpar_texto($this->input->post('data_do_pagamento')),
+                    'idUsuario'  => $this->input->post('carteirinha'),
+                    'idPlanos'  => $this->input->post('planos'),
+                    'pagamento'  => $this->input->post('pagamento'),
                     'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                     'ip' => $_SERVER['REMOTE_ADDR'],
                     'created_at' => time(),
-    
 
                 );
+
+           
           
+             
                
                 if($this->insert_model->index(TABELA_NOME, $data_insert_entity)){
 
@@ -117,6 +124,8 @@ class videos extends CI_Controller {
         
         $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
         $data['view']['action'] = array('name' => 'editar', 'alias' => 'Editar');
+        $data['view']['carteirinha'] =   $this->read_model->select_ativo('carteirinha');
+        $data['view']['planos'] =   $this->read_model->select_ativo('planos');
 
         $data['view']['record'] = $this->read_model->select__id(TABELA_NOME, $id);
 
@@ -131,10 +140,11 @@ class videos extends CI_Controller {
                 
             $data_update_entity = array(
 
-                'nome'  => $this->input->post('nome'),
-                'path'  => $this->input->post('nome'),
-                'link'  => $this->input->post('link'),
-                'status'  => $this->input->post('status'),
+               
+                'data_do_pagamento'  => helperString2limpar_texto($this->input->post('data_do_pagamento')),
+                'idUsuario'  => $this->input->post('carteirinha'),
+                'idPlanos'  => $this->input->post('planos'),
+                'pagamento'  => $this->input->post('pagamento'),
                 'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                 'ip' => $_SERVER['REMOTE_ADDR'],
                 'created_at' => time(),
@@ -142,7 +152,8 @@ class videos extends CI_Controller {
             );
           
 
-                    
+           
+           
             if ($this->db->update(TABELA_NOME, $data_update_entity, array(TABELA_ID => $id))) {
 
                 $this->session->set_flashdata('success', 'Registro atualizado com sucesso.');
@@ -230,7 +241,7 @@ class videos extends CI_Controller {
 
         $sTable = TABELA_NOME;
 
-        $aColumns = array(TABELA_ID, 'nome', 'link', 'status');
+        $aColumns = array(TABELA_ID, 'usuario', 'plano', 'pagamento', 'data_do_pagamento');
 
         $sIndexColumn = TABELA_ID;
 
@@ -278,35 +289,34 @@ class videos extends CI_Controller {
             }
         }
 
-         $sQuery = "
-          SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
-          FROM $sTable
-          $sWhere
-          $sOrder
-          $sLimit
-          ";
+        //  $sQuery = "
+        //   SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
+        //   FROM $sTable
+        //   $sWhere
+        //   $sOrder
+        //   $sLimit
+        //   "; 
 
         if (!$sWhere) {
             $sWhere = 'WHERE 1';
         }
 
-        // $sQuery = "
-        // SELECT SQL_CALC_FOUND_ROWS
-        // a.idTabelas,
-        // b.nome grupo,
-        // a.nome,
-        // a.alias,
-        // a.icone,
-        // a.posicao,
-        // a.visivelNoMenu,
-        // a.status status
-        // FROM $sTable a,
-        // tabelas_grupos b
-        // $sWhere
-        // AND a.idTabelas_grupos = b.idTabelas_grupos
-        // $sOrder
-        // $sLimit
-        // ";
+        $sQuery = "
+        SELECT SQL_CALC_FOUND_ROWS
+        a.idMensalidade,
+        b.nome usuario,
+        c.nome plano,
+        a.pagamento,
+        a.data_do_pagamento
+        FROM $sTable a,
+        carteirinha b,
+        planos c
+        $sWhere
+        AND a.idPlanos = c.idPlanos
+        AND a.idUsuario = b.idCarteirinha
+        $sOrder
+        $sLimit
+        ";
 
         $rResult = $this->db->query($sQuery) or helperDataTable2FatalError('MySQL Error: ' . $this->db->_error_message());
 

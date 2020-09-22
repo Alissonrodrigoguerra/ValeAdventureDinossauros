@@ -163,3 +163,8 @@ function helperString2CharacterLimiter($string, $n) {
     $string = character_limiter($ci->security->xss_clean(strip_tags($string)), $n);
     return $string;
 }
+
+function helperString2limpar_texto($str){ 
+    return preg_replace("/[^0-9]/", "", $str); 
+  }
+  

@@ -53,7 +53,7 @@ class Planos extends CI_Controller {
 
         $data = array();
         $data['auth'] =   $this->session->auth;
-
+    
         
         $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
         $data['view']['action'] = array('name' => 'cadastrar', 'alias' => 'Cadastar');
@@ -63,13 +63,8 @@ class Planos extends CI_Controller {
         $data['tabelas_grupos'] = $this->Read_model->index('tabelas_grupos');
 
          // Validação
-
          $this->form_validation->set_rules('nome', 'Nome', 'required|min_length[3]|max_length[50]');
-         $this->form_validation->set_rules('alias', 'Alias', 'required|min_length[3]|max_length[50]');
-         $this->form_validation->set_rules('posicao', 'Posição', 'required|numeric');
-         $this->form_validation->set_rules('icone', 'Icone', 'required');
-         $this->form_validation->set_rules('tabelas_grupos', 'Grupos Tabelas', 'required');
-         $this->form_validation->set_rules('VisivelNoMenu', 'Visivel No Menu', 'required');
+         $this->form_validation->set_rules('link', 'Link', 'required|min_length[1]|max_length[255]');
 
 
          // Executa Validação
@@ -81,20 +76,17 @@ class Planos extends CI_Controller {
                 $data_insert_entity = array(
 
                     'nome'  => $this->input->post('nome'),
-                    'path'  => $this->input->post('alias'),
-                    'alias'  => $this->input->post('alias'),
-                    'posicao'  => $this->input->post('posicao'),
-                    'icone'  => $this->input->post('icone'),
-                    'idTabelas_grupos' =>   $this->input->post('tabelas_grupos'),
-                    'visivelNoMenu'  => $this->input->post('VisivelNoMenu'),
+                    'link'  => $this->input->post('link'),
+                    'planos'  => $this->input->post('planos'),
+                    'valor'  => $this->input->post('valor'),
+                    'status'  => '0',
                     'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                     'ip' => $_SERVER['REMOTE_ADDR'],
                     'created_at' => time(),
-
+    
                 );
           
-                $this->load->helper('construct_table_helper');
-                helperconstruct_table_criar($data_insert_entity['nome']);	
+          
                
                 if($this->insert_model->index(TABELA_NOME, $data_insert_entity)){
 
@@ -140,31 +132,16 @@ class Planos extends CI_Controller {
             $data_update_entity = array(
 
                 'nome'  => $this->input->post('nome'),
-                'path'  => $this->input->post('alias'),
-                'alias'  => $this->input->post('alias'),
-                'posicao'  => $this->input->post('posicao'),
-                'icone'  => $this->input->post('icone'),
-                'idTabelas_grupos' =>   $this->input->post('tabelas_grupos'),
-                'visivelNoMenu'  => $this->input->post('VisivelNoMenu'),
+                'link'  => $this->input->post('link'),
+                'plano'  => $this->input->post('plano'),
+                'valor'  => $this->input->post('valor'),
+                'status'  => '0',
                 'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                 'ip' => $_SERVER['REMOTE_ADDR'],
                 'created_at' => time(),
-
             );
           
 
-            $this->load->dbforge();
-            $this->dbforge->rename_table($data['view']['record']['nome'], $data_update_entity['nome']);
-            $fields = array(
-              'id'.ucfirst($data['view']['record']['nome']) => array(
-                        'name' => 'id'.ucfirst($data_update_entity['nome']),
-                        'type' => 'INT',
-
-                ),
-            );
-
-          
-            $this->dbforge->modify_column($data_update_entity['nome'], $fields);
            
             if ($this->db->update(TABELA_NOME, $data_update_entity, array(TABELA_ID => $id))) {
 
@@ -197,7 +174,6 @@ class Planos extends CI_Controller {
         $data = array();
         $data['auth'] =   $this->session->auth;
 
-        
         $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
         $data['view']['action'] = array('name' => 'editar', 'alias' => 'Editar');
 
@@ -211,7 +187,7 @@ class Planos extends CI_Controller {
 
             $data = array( 'status' => '1' );
         }
-      
+
         
         $this->update_model->index($id, TABELA_NOME, $data);
 
@@ -253,7 +229,7 @@ class Planos extends CI_Controller {
 
         $sTable = TABELA_NOME;
 
-        $aColumns = array(TABELA_ID, 'grupo', 'nome', 'alias', 'icone', 'posicao', 'visivelNoMenu', 'status');
+        $aColumns = array(TABELA_ID,  'nome',  'planos', 'valor', 'status' );
 
         $sIndexColumn = TABELA_ID;
 
@@ -301,35 +277,35 @@ class Planos extends CI_Controller {
             }
         }
 
-        /* $sQuery = "
+         $sQuery = "
           SELECT SQL_CALC_FOUND_ROWS " . str_replace(" , ", " ", implode(", ", $aColumns)) . "
           FROM $sTable
           $sWhere
           $sOrder
           $sLimit
-          "; */
+          "; 
 
         if (!$sWhere) {
             $sWhere = 'WHERE 1';
         }
 
-        $sQuery = "
-        SELECT SQL_CALC_FOUND_ROWS
-        a.idTabelas,
-        b.nome grupo,
-        a.nome,
-        a.alias,
-        a.icone,
-        a.posicao,
-        a.visivelNoMenu,
-        a.status status
-        FROM $sTable a,
-        tabelas_grupos b
-        $sWhere
-        AND a.idTabelas_grupos = b.idTabelas_grupos
-        $sOrder
-        $sLimit
-        ";
+        // $sQuery = "
+        // SELECT SQL_CALC_FOUND_ROWS
+        // a.idTabelas,
+        // b.nome grupo,
+        // a.nome,
+        // a.alias,
+        // a.icone,
+        // a.posicao,
+        // a.visivelNoMenu,
+        // a.status status
+        // FROM $sTable a,
+        // tabelas_grupos b
+        // $sWhere
+        // AND a.idTabelas_grupos = b.idTabelas_grupos
+        // $sOrder
+        // $sLimit
+        // ";
 
         $rResult = $this->db->query($sQuery) or helperDataTable2FatalError('MySQL Error: ' . $this->db->_error_message());
 

@@ -1,6 +1,6 @@
 <?php
 
-class videos extends CI_Controller {
+class Carteirinha extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -22,10 +22,12 @@ class videos extends CI_Controller {
 		}
         $this->load->helper('painel2');
         $this->load->helper('session2');
+        $this->load->helper('String2');
 
-        define('TABELA_NOME', 'videos');
-        define('TABELA_ALIAS', 'Videos');
-        define('TABELA_ID', 'idVideos');
+
+        define('TABELA_NOME', 'carteirinha');
+        define('TABELA_ALIAS', 'Carteirinha');
+        define('TABELA_ID', 'idCarteirinha');
 
 
         $this->load->model('delete_model');
@@ -54,7 +56,6 @@ class videos extends CI_Controller {
         $data = array();
         $data['auth'] =   $this->session->auth;
 
-     
         
         $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
         $data['view']['action'] = array('name' => 'cadastrar', 'alias' => 'Cadastar');
@@ -65,28 +66,47 @@ class videos extends CI_Controller {
 
          // Validação
 
-         $this->form_validation->set_rules('nome', 'Nome', 'required|min_length[3]|max_length[50]');
-         $this->form_validation->set_rules('link', 'Link', 'required|min_length[3]|max_length[50]');
+         $this->form_validation->set_rules('nome', 'Nome', 'required|min_length[3]|max_length[255]');
+         $this->form_validation->set_rules('cpf', 'CPF', 'required');
+         $this->form_validation->set_rules('rg', 'RG', 'required');
+         $this->form_validation->set_rules('data_de_nascimento', 'Data_de_Nascimento', 'required');
+         $this->form_validation->set_rules('email', 'E-mail', 'required');
 
+        //  $this->form_validation->set_rules('tabelas_grupos', 'Grupos Tabelas', 'required');
+        //  $this->form_validation->set_rules('VisivelNoMenu', 'Visivel No Menu', 'required');
+      
 
          // Executa Validação
 
         if ($this->form_validation->run() == TRUE)
         {
             if( $this->input->post()){
-                
+
+               
                 $data_insert_entity = array(
-                    
+
+
                     'nome'  => $this->input->post('nome'),
-                    'link'  => $this->input->post('link'),
-                    'status'  => $this->input->post('status'),
-                    'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
+                    'cpf'  => helperString2limpar_texto($this->input->post('cpf')),
+                    'rg'  => helperString2limpar_texto($this->input->post('rg')),
+                    'data_de_nascimento'  => helperString2limpar_texto($this->input->post('data_de_nascimento')),
+                    'sexo'  => $this->input->post('sexo'),
+                    'email'  => $this->input->post('email'),
+                    'rua'  => $this->input->post('rua'),
+                    'bairro'  => $this->input->post('bairro'),
+                    'cidade'  => $this->input->post('cidade'),
+                    'estado'  => $this->input->post('estado'),
+                    'cep'  => helperString2limpar_texto($this->input->post('cep')),
+                    'numero'  => helperString2limpar_texto($this->input->post('numero')),
+                    'telefone'  => helperString2limpar_texto($this->input->post('telefone')),
+                    'cel'  => helperString2limpar_texto($this->input->post('cel')),
+                    'status' => 0,
+
                     'ip' => $_SERVER['REMOTE_ADDR'],
                     'created_at' => time(),
-    
 
                 );
-          
+
                
                 if($this->insert_model->index(TABELA_NOME, $data_insert_entity)){
 
@@ -132,17 +152,27 @@ class videos extends CI_Controller {
             $data_update_entity = array(
 
                 'nome'  => $this->input->post('nome'),
-                'path'  => $this->input->post('nome'),
-                'link'  => $this->input->post('link'),
-                'status'  => $this->input->post('status'),
+                'cpf'  => helperString2limpar_texto($this->input->post('cpf')),
+                'rg'  => helperString2limpar_texto($this->input->post('rg')),
+                'data_de_nascimento'  => helperString2limpar_texto($this->input->post('data_de_nascimento')),
+                'sexo'  => $this->input->post('sexo'),
+                'email'  => $this->input->post('email'),
+                'rua'  => $this->input->post('rua'),
+                'bairro'  => $this->input->post('bairro'),
+                'cidade'  => $this->input->post('cidade'),
+                'estado'  => $this->input->post('estado'),
+                'cep'  => helperString2limpar_texto($this->input->post('cep')),
+                'numero'  => helperString2limpar_texto($this->input->post('numero')),
+                'telefone'  => helperString2limpar_texto($this->input->post('telefone')),
+                'cel'  => helperString2limpar_texto($this->input->post('cel')),
+                'status' => helperString2limpar_texto($this->input->post('status')),
                 'user_agent'  => helperSession2GetValueOfArray('auth', 'idUsers'), 
                 'ip' => $_SERVER['REMOTE_ADDR'],
                 'created_at' => time(),
 
             );
           
-
-                    
+           
             if ($this->db->update(TABELA_NOME, $data_update_entity, array(TABELA_ID => $id))) {
 
                 $this->session->set_flashdata('success', 'Registro atualizado com sucesso.');
@@ -188,7 +218,6 @@ class videos extends CI_Controller {
 
             $data = array( 'status' => '1' );
         }
-      
         
         $this->update_model->index($id, TABELA_NOME, $data);
 
@@ -210,14 +239,50 @@ class videos extends CI_Controller {
         
       
         $this->delete_model->index($id, TABELA_NOME);
-
-        $this->load->dbforge();
-        $this->dbforge->drop_table($data['view']['record']['nome'], TRUE);
-     
         
-         redirect(base_url('painel/' . TABELA_NOME . '/'));
+        redirect(base_url('painel/' . TABELA_NOME . '/'));
         
+        
+        
+    }
 
+
+    public function imprimir($id) {
+        
+      
+        $data = array();
+        $data['auth'] =   $this->session->auth;
+
+        
+        $this->load->helper('chillerlan');
+        $this->load->helper('mpdf');
+
+        $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
+        $data['view']['action'] = array('name' => 'editar', 'alias' => 'Editar');
+        $data['view']['record'] = $this->read_model->select__id(TABELA_NOME, $id);
+        $link = base_url('carterinha/$id');
+       
+        $html = "<div>".gerador($link)."<br><b>Nome: </b>".$data['view']['record']['nome']."<br><b>RG: </b>".$data['view']['record']['rg']."<br><b>CPF: </b>".$data['view']['record']['cpf']."<br><b>Data de Nascimento: </b>".$data['view']['record']['data_de_nascimento']."<br><b>Ativo Desde: </b>".$data['view']['record']['created_at']."<br></div>";
+        echo pdf($html);
+
+        
+    }
+
+
+    public function consulta($id) {
+        
+      
+        $data = array();
+        $data['auth'] =   $this->session->auth;
+
+        
+        $this->load->helper('chillerlan');
+        $this->load->helper('mpdf');
+
+        $data['view']['controller'] = array('name' => TABELA_NOME, 'alias' => TABELA_ALIAS);
+        $data['view']['action'] = array('name' => 'editar', 'alias' => 'Editar');
+        $data['view']['record'] = $this->read_model->select__id(TABELA_NOME, $id);
+        print($id);
         
     }
 
@@ -230,7 +295,7 @@ class videos extends CI_Controller {
 
         $sTable = TABELA_NOME;
 
-        $aColumns = array(TABELA_ID, 'nome', 'link', 'status');
+        $aColumns = array(TABELA_ID, 'Nome', 'cpf', 'rg', 'data_de_nascimento', 'cep', 'cidade', 'status');
 
         $sIndexColumn = TABELA_ID;
 
@@ -284,7 +349,7 @@ class videos extends CI_Controller {
           $sWhere
           $sOrder
           $sLimit
-          ";
+          "; 
 
         if (!$sWhere) {
             $sWhere = 'WHERE 1';
